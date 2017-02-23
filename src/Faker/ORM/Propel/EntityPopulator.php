@@ -3,7 +3,7 @@
 namespace Faker\ORM\Propel;
 
 use \Faker\Provider\Base;
-use \ColumnMap;
+use \Propel\Runtime\Map\ColumnMap;
 
 /**
  * Service class for populating a table through a Propel ActiveRecord class.
@@ -58,7 +58,7 @@ class EntityPopulator
     {
         $formatters = array();
         $class = $this->class;
-        $peerClass = $class::PEER;
+        $peerClass = $class::TABLE_MAP;
         $tableMap = $peerClass::getTableMap();
         $nameGuesser = new \Faker\Guesser\Name($generator);
         $columnTypeGuesser = new \Faker\ORM\Propel\ColumnTypeGuesser($generator);
@@ -143,7 +143,7 @@ class EntityPopulator
     {
         $modifiers = array();
         $class = $this->class;
-        $peerClass = $class::PEER;
+        $peerClass = $class::TABLE_MAP;
         $tableMap = $peerClass::getTableMap();
         foreach ($tableMap->getBehaviors() as $name => $params) {
             switch ($name) {

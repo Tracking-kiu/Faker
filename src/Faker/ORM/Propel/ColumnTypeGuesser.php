@@ -2,8 +2,8 @@
 
 namespace Faker\ORM\Propel;
 
-use \PropelColumnTypes;
-use \ColumnMap;
+use \Propel\Generator\Model\PropelTypes;
+use \Propel\Runtime\Map\ColumnMap;
 
 class ColumnTypeGuesser
 {
@@ -25,80 +25,74 @@ class ColumnTypeGuesser
     {
         $generator = $this->generator;
         if ($column->isTemporal()) {
-            if ($column->isEpochTemporal()) {
-                return function () use ($generator) {
-                    return $generator->dateTime;
-                };
-            } else {
-                return function () use ($generator) {
-                    return $generator->dateTimeAD;
-                };
-            }
+            return function () use ($generator) {
+                return $generator->dateTime;
+            };
         }
         $type = $column->getType();
         switch ($type) {
-            case PropelColumnTypes::BOOLEAN:
-            case PropelColumnTypes::BOOLEAN_EMU:
+            case PropelTypes::BOOLEAN:
+            case PropelTypes::BOOLEAN_EMU:
                 return function () use ($generator) {
                     return $generator->boolean;
                 };
-            case PropelColumnTypes::NUMERIC:
-            case PropelColumnTypes::DECIMAL:
+            case PropelTypes::NUMERIC:
+            case PropelTypes::DECIMAL:
                 $size = $column->getSize();
 
                 return function () use ($generator, $size) {
                     return $generator->randomNumber($size + 2) / 100;
                 };
-            case PropelColumnTypes::TINYINT:
+            case PropelTypes::TINYINT:
                 return function () {
                     return mt_rand(0, 127);
                 };
-            case PropelColumnTypes::SMALLINT:
+            case PropelTypes::SMALLINT:
                 return function () {
                     return mt_rand(0, 32767);
                 };
-            case PropelColumnTypes::INTEGER:
+            case PropelTypes::INTEGER:
                 return function () {
                     return mt_rand(0, intval('2147483647'));
                 };
-            case PropelColumnTypes::BIGINT:
+            case PropelTypes::BIGINT:
                 return function () {
                     return mt_rand(0, intval('9223372036854775807'));
                 };
-            case PropelColumnTypes::FLOAT:
+            case PropelTypes::FLOAT:
                 return function () {
                     return mt_rand(0, intval('2147483647'))/mt_rand(1, intval('2147483647'));
                 };
-            case PropelColumnTypes::DOUBLE:
-            case PropelColumnTypes::REAL:
+            case PropelTypes::DOUBLE:
+            case PropelTypes::REAL:
                 return function () {
                     return mt_rand(0, intval('9223372036854775807'))/mt_rand(1, intval('9223372036854775807'));
                 };
-            case PropelColumnTypes::CHAR:
-            case PropelColumnTypes::VARCHAR:
-            case PropelColumnTypes::BINARY:
-            case PropelColumnTypes::VARBINARY:
+            case PropelTypes::CHAR:
+            case PropelTypes::VARCHAR:
+            case PropelTypes::BINARY:
+            case PropelTypes::VARBINARY:
                 $size = $column->getSize();
 
                 return function () use ($generator, $size) {
                     return $generator->text($size);
                 };
-            case PropelColumnTypes::LONGVARCHAR:
-            case PropelColumnTypes::LONGVARBINARY:
-            case PropelColumnTypes::CLOB:
-            case PropelColumnTypes::CLOB_EMU:
-            case PropelColumnTypes::BLOB:
+            case PropelTypes::LONGVARCHAR:
+            case PropelTypes::LONGVARBINARY:
+            case PropelTypes::CLOB:
+            case PropelTypes::CLOB_EMU:
+            case PropelTypes::BLOB:
                 return function () use ($generator) {
                     return $generator->text;
                 };
-            case PropelColumnTypes::ENUM:
+            case PropelTypes::ENUM:
                 $valueSet = $column->getValueSet();
 
                 return function () use ($generator, $valueSet) {
                     return $generator->randomElement($valueSet);
                 };
-            case PropelColumnTypes::OBJECT:
-            case PropelColumnTypes::PHP_ARRAY:
+            case PropelTypes::OBJECT:
+            case PropelTypes::PHP_ARRAY:
             default:
             // no smart way to guess what the user expects here
                 return null;

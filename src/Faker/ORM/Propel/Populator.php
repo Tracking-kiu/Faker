@@ -2,6 +2,9 @@
 
 namespace Faker\ORM\Propel;
 
+use \Propel\Runtime\Propel;
+use \Propel\Runtime\ServiceContainer\ServiceContainerInterface;
+
 /**
  * Service class for populating a database using the Propel ORM.
  * A Populator can populate several tables using ActiveRecord classes.
@@ -56,8 +59,8 @@ class Populator
         if (null === $con) {
             $con = $this->getConnection();
         }
-        $isInstancePoolingEnabled = \Propel::isInstancePoolingEnabled();
-        \Propel::disableInstancePooling();
+        $isInstancePoolingEnabled = Propel::isInstancePoolingEnabled();
+        Propel::disableInstancePooling();
         $insertedEntities = array();
         $con->beginTransaction();
         foreach ($this->quantities as $class => $number) {
@@ -67,7 +70,7 @@ class Populator
         }
         $con->commit();
         if ($isInstancePoolingEnabled) {
-            \Propel::enableInstancePooling();
+            Propel::enableInstancePooling();
         }
 
         return $insertedEntities;
@@ -82,8 +85,7 @@ class Populator
             throw new \RuntimeException('No class found from entities. Did you add entities to the Populator ?');
         }
 
-        $peer = $class::PEER;
-
-        return \Propel::getConnection($peer::DATABASE_NAME, \Propel::CONNECTION_WRITE);
+        $peer = $class::TABLE_MAP;
+        return Propel::getConnection($peer::DATABASE_NAME, ServiceContainerInterface::CONNECTION_WRITE);
     }
 }
